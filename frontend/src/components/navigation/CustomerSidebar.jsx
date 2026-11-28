@@ -1,4 +1,4 @@
-import { LayoutDashboard, Package, MapPin, UserRound, Plus, LogOut, Scale, LifeBuoy, ClipboardList, Users } from 'lucide-react'
+import { LayoutDashboard, Package, MapPin, UserRound, Plus, LogOut, Scale, LifeBuoy, ClipboardList, Users, Gauge } from 'lucide-react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { Logo } from './Navbar'
 import { useAuth } from '../../features/auth/hooks/useAuth'
@@ -22,6 +22,7 @@ export function activeNavItem(pathname) {
   if (pathname.startsWith('/customer/profile')) return '/customer/profile'
   if (pathname.startsWith(BOOK_PATH)) return BOOK_PATH
   if (pathname === '/customer' || pathname === '/customer/') return '/customer'
+  if (pathname.startsWith('/staff/dashboard')) return '/staff/dashboard'
   if (pathname.startsWith('/staff/bill')) return '/staff/bill'
   if (pathname.startsWith('/staff/team')) return '/staff/team'
   if (pathname === '/staff' || pathname === '/staff/') return '/staff'
@@ -34,6 +35,7 @@ export function navFor(role) {
   if (!['STAFF', 'ADMIN'].includes(role)) return customerNav
   return [
     ...customerNav,
+    { to: '/staff/dashboard', label: 'Overview', icon: Gauge },
     { to: '/staff', label: 'Work list', icon: ClipboardList },
     { to: '/staff/bill', label: 'Weigh & bill', icon: Scale },
     ...(role === 'ADMIN' ? [{ to: '/staff/team', label: 'Team', icon: Users }] : []),

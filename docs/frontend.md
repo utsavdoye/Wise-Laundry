@@ -5,6 +5,20 @@
 
 ---
 
+## 28 Nov 2026 — Admin / staff Overview dashboard
+
+**Branch:** `feature/admin-dashboard`
+
+- New **Overview** screen for staff and admin (`/staff/dashboard`, in the sidebar) showing one day at a time, Today or Yesterday:
+  - **Day activity tiles:** new bookings, pickups, at laundry, out for delivery, delivered.
+  - **Money:** collected that day (split UPI vs cash), still owed (billed but unpaid, with count), and how many customer-claimed payments are waiting to be confirmed.
+  - **Unpaid orders list:** reference, customer, status, amount, and a "Says paid" flag for pending ones.
+- **Backend:** `dashboard.service.js` (`getDashboard`), `GET /staff/dashboard?day=YYYY-MM-DD`, gated to STAFF + ADMIN. Read-only; reuses `istDayRange`. "Delivered today" uses `statusHistory` dot-match (not `$elemMatch`, which the local FerretDB test stand-in rejects).
+- **Frontend:** `StaffDashboardPage.jsx`, `staffDashboard` in api-client, route + sidebar "Overview" link (Gauge icon).
+- Tests: `tests/dashboard.test.js` (counts, money by method, outstanding, pending-to-confirm, delivered-today, role gating).
+
+---
+
 ## 28 Nov 2026 — Continue with email (passwordless login)
 
 **Branch:** `feature/email-login`

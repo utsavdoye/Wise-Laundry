@@ -11,6 +11,7 @@ router.use(requireAuth)
 router.use(requireRole('RIDER', 'STAFF', 'ADMIN'))
 router.use(privateCacheControl)
 
+router.get('/dashboard', staff, staffController.getDashboard)
 router.get('/work', staffController.getWorkList)
 router.post('/orders/:id/status', staffController.advanceStatus)
 router.post('/orders/:id/payment', staffController.setPayment)

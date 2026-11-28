@@ -53,6 +53,7 @@ const routes = [
     element: <CustomerLayout />,
     children: [
       { index: true, element: page(() => import('../pages/StaffWorkPage')) },
+      { path: 'dashboard', element: page(() => import('../pages/StaffDashboardPage')) },
       { path: 'bill', element: page(() => import('../pages/StaffBillingPage')) },
       { path: 'team', element: page(() => import('../pages/TeamPage')) },
     ],

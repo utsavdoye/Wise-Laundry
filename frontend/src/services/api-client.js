@@ -83,6 +83,7 @@ export const laundryApi = {
   listOrders: ({ status = 'all', page = 1, pageSize = 10 } = {}) =>
     apiClient(`/orders?status=${status}&page=${page}&pageSize=${pageSize}`),
   getOrder: (id) => apiClient(`/orders/${id}`),
+  staffDashboard: (day) => apiClient(`/staff/dashboard${day ? `?day=${encodeURIComponent(day)}` : ''}`),
   staffWorkList: (day) => apiClient(`/staff/work${day ? `?day=${encodeURIComponent(day)}` : ''}`),
   staffAdvanceStatus: (id, from, extra) => apiClient(`/staff/orders/${encodeURIComponent(id)}/status`, { method: 'POST', body: { from, ...extra } }),
   staffRiders: () => apiClient('/staff/riders'),

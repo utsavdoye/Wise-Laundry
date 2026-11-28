@@ -1,6 +1,15 @@
 import * as staffService from '../services/staff.service.js'
 import * as paymentService from '../services/payment.service.js'
+import * as dashboardService from '../services/dashboard.service.js'
 import { saveBillSchema, advanceStatusSchema, assignRiderSchema, setRoleSchema, setPaymentSchema, validate } from '../utils/validation.js'
+
+export async function getDashboard(req, res, next) {
+  try {
+    return res.json({ data: await dashboardService.getDashboard({ day: req.query.day }) })
+  } catch (err) {
+    next(err)
+  }
+}
 
 export async function getOrder(req, res, next) {
   try {
