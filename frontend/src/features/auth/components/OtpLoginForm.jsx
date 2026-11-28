@@ -89,7 +89,7 @@ export function OtpInput({ value, onChange, onComplete, error, disabled }) {
   )
 }
 
-function useCountdown(untilIso) {
+export function useCountdown(untilIso) {
   const [now, setNow] = useState(() => Date.now())
   useEffect(() => {
     if (!untilIso) return

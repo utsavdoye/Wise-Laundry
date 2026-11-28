@@ -41,6 +41,15 @@ const envSchema = z.object({
   VAPID_PUBLIC_KEY: z.string().trim().default(''),
   VAPID_PRIVATE_KEY: z.string().trim().default(''),
   VAPID_SUBJECT: z.string().trim().default('mailto:support@wiselaundry.app'),
+  // Email sending. Use EITHER Resend (RESEND_API_KEY, needs a verified domain for any recipient)
+  // OR SMTP such as Gmail (SMTP_HOST/PORT/USER/PASS — sends to anyone, no domain needed). Empty = email off.
+  EMAIL_FROM: z.string().trim().default('Wise Laundry <onboarding@resend.dev>'),
+  RESEND_API_KEY: z.string().trim().default(''),
+  SMTP_HOST: z.string().trim().default(''),
+  SMTP_PORT: z.coerce.number().int().default(465),
+  SMTP_USER: z.string().trim().default(''),
+  SMTP_PASS: z.string().default(''),
+  SMTP_SECURE: z.enum(['true', 'false']).default('true').transform((v) => v === 'true'),
   ORDER_CHANGE_CUTOFF_MINUTES: z.coerce.number().int().min(0).default(120),
   // How many times one order can be rescheduled.
   ORDER_MAX_RESCHEDULES: z.coerce.number().int().min(0).default(2),

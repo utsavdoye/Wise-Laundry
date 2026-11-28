@@ -56,6 +56,20 @@ export function AuthProvider({ children }) {
     return res.data
   }, [])
 
+  // Email login. A new email returns isNewUser (no user yet); the user is only set once
+  // name + phone are submitted, so the login page doesn't leave too early.
+  const requestEmailCode = useCallback((email) => api.requestEmailCode({ email }), [])
+
+  const verifyEmailCode = useCallback(async (email, code, profile) => {
+    const res = await api.verifyEmailCode({ email, code, ...(profile || {}) })
+    setLoggedOut(false)
+    if (res.data.user) {
+      if (profile) setJustSignedUp(true)
+      setUser(res.data.user)
+    }
+    return res.data
+  }, [])
+
   const completeProfile = useCallback(async (details) => {
     const res = await api.updateMe(details)
     setJustSignedUp(true)
@@ -88,11 +102,13 @@ export function AuthProvider({ children }) {
       googleSignIn,
       requestOtp,
       verifyOtp,
+      requestEmailCode,
+      verifyEmailCode,
       completeProfile,
       logout,
       setUser,
     }),
-    [user, status, loggedOut, justSignedUp, dismissSignupPrompt, login, register, googleSignIn, requestOtp, verifyOtp, completeProfile, logout],
+    [user, status, loggedOut, justSignedUp, dismissSignupPrompt, login, register, googleSignIn, requestOtp, verifyOtp, requestEmailCode, verifyEmailCode, completeProfile, logout],
   )
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

@@ -5,6 +5,8 @@ import {
   googleSignInSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
+  requestEmailCodeSchema,
+  verifyEmailCodeSchema,
   validate,
 } from '../utils/validation.js'
 import { config } from '../config/env.js'
@@ -55,6 +57,35 @@ export async function googleSignIn(req, res, next) {
 
     res.cookie(COOKIE_NAME, result.rawToken, cookieOptions)
     return res.json({ data: { user: result.user.toJSON(), needsPhone: false } })
+  } catch (err) {
+    next(err)
+  }
+}
+
+export async function requestEmailCode(req, res, next) {
+  try {
+    const { email } = validate(requestEmailCodeSchema, req.body)
+    const { resendAvailableAt, code } = await authService.requestEmailCode(email)
+    return res.json({
+      data: { resendAvailableAt },
+      meta: { codeNotice: config?.NODE_ENV !== 'production' ? code : undefined },
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
+export async function verifyEmailCode(req, res, next) {
+  try {
+    const data = validate(verifyEmailCodeSchema, req.body)
+    const result = await authService.verifyEmailCode({ ...data, req })
+
+    if (result.isNewUser) {
+      return res.json({ data: { user: null, isNewUser: true } })
+    }
+
+    res.cookie(COOKIE_NAME, result.rawToken, cookieOptions)
+    return res.json({ data: { user: result.user.toJSON(), isNewUser: false } })
   } catch (err) {
     next(err)
   }

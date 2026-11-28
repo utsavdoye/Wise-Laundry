@@ -3,6 +3,7 @@ import { Order } from '../models/Order.js'
 import { encrypt, decrypt } from '../utils/crypto.js'
 import { config } from '../config/env.js'
 import { notifyOrderStatus } from './push.service.js'
+import { emailOrderDelivered } from './email.service.js'
 import { Service } from '../models/Service.js'
 import { User } from '../models/User.js'
 import { ApiError } from '../utils/errors.js'
@@ -241,6 +242,7 @@ export async function advanceStatus(staffUser, idOrRef, { from, quantity, code }
   )
   if (!updated) throw new ApiError(409, 'ORDER_CHANGED', 'Someone already updated this order. Refresh to see the latest.')
   notifyOrderStatus(updated) // push to the customer; fire-and-forget
+  if (next === 'DELIVERED') emailOrderDelivered(updated)
   return updated.toJSON()
 }
 

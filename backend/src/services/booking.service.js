@@ -9,6 +9,7 @@ import { enforceOwnership } from '../middleware/auth.js'
 import { ApiError } from '../utils/errors.js'
 import { changeDeadline, getChangeRules, getExpressRules, expressSwitchMinutes, policySettings } from './orderPolicy.js'
 import { computeBill, expressFor, orderExpress, orderTurnaroundHours, buildUpiIntent } from './billing.service.js'
+import { emailOrderBooked } from './email.service.js'
 
 export const ACTIVE_STATUSES = [
   'BOOKED',
@@ -115,6 +116,7 @@ export async function createOrder(userId, data, idempotencyKey) {
     order.setEncryptedInstructions(data.instructions)
 
     await order.save()
+    emailOrderBooked(order) // best-effort confirmation email
     return order.toJSON()
   } catch (err) {
     if (reservedSlot) {

@@ -21,12 +21,10 @@ const userSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    // Not required for people who only sign in with Google.
+    // Only password accounts have one. People who sign in with Google or an
+    // emailed code have none; the register flow always sets it for its own users.
     passwordHash: {
       type: String,
-      required() {
-        return !this.googleId
-      },
     },
     // Google's account id ("sub"). Set when the user signs in with Google.
     googleId: {

@@ -158,6 +158,18 @@ export const resetPasswordSchema = z.object({
   newPassword: z.string().min(8, 'Password must be at least 8 characters').max(128),
 })
 
+export const requestEmailCodeSchema = z.object({
+  email: z.string().trim().email('Enter a valid email address').toLowerCase(),
+})
+
+export const verifyEmailCodeSchema = z.object({
+  email: z.string().trim().email('Enter a valid email address').toLowerCase(),
+  code: z.string().trim().regex(/^\d{6}$/, 'Enter the 6-digit code.'),
+  // Sent only when a brand-new email needs an account.
+  fullName: z.string().trim().min(2, 'Enter your name.').max(100).optional(),
+  phone: z.string().trim().regex(phoneRegex, 'Enter a valid 10-digit mobile number').optional(),
+})
+
 /**
  * Validates data against a Zod schema and throws a structured ApiError on failure.
  */

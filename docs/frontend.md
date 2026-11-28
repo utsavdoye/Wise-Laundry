@@ -5,6 +5,34 @@
 
 ---
 
+## 28 Nov 2026 — Continue with email (passwordless login)
+
+**Branch:** `feature/email-login`
+
+- New **"Continue with email"** on the login screen: type your email → we send a **6-digit code** → you're in. No password needed. This is now the default; a small **"Log in with a password instead"** link keeps the old email+password form for anyone who prefers it.
+- A code works for **10 minutes**, is **single-use**, allows **5 wrong tries** before it's burned, and you must wait **45 seconds** between requests. Codes are stored hashed, never in plain text.
+- A **brand-new email** is asked for name + mobile number once, then the account is created (marked email-verified). An existing email just signs in. Works for Google and password accounts too — anyone with an email can get in this way.
+- **Backend**: `EmailLoginCode` model; `POST /auth/email/request` and `POST /auth/email/verify`; `requestEmailCode` / `verifyEmailCode` in `auth.service`. In non-production the code is returned in `meta.codeNotice` (same pattern as register/reset) so it can be tested without a real inbox.
+- `User.passwordHash` is no longer required — Google and email-code accounts legitimately have none (register still always sets it for its own users).
+- Relies on the email service from the previous step, so the Gmail SMTP (or Resend) settings must be set in the backend env for codes to actually send.
+- Tests: `tests/email-login.test.js` (sign in existing user, new-email signup, wrong code + lockout, expiry, single-use, resend throttle).
+
+---
+
+## 28 Nov 2026 — Email service (backbone)
+
+**Branch:** `feature/email-service`
+
+- A pluggable email sender: **Resend** (HTTP, needs a verified domain to email anyone) or **SMTP/Gmail** (emails anyone, no domain). Empty config = email off (safely skipped).
+- Wired two best-effort emails: **booking confirmation** (on booking) and **delivered receipt** (with the total). Both fire-and-forget, never block the request.
+- Templates ready for the next step: `loginCodeEmail` (6-digit "Continue with email" code), plus `bookingEmail`, `deliveredEmail`. `sendEmail` returns `{ sent, reason }` and never throws.
+- **Settings (backend)**: `EMAIL_FROM`, then either `RESEND_API_KEY`, or `SMTP_HOST/PORT/USER/PASS/SECURE` (Gmail: smtp.gmail.com:465, pass = a Gmail App Password).
+- **Dependency**: `nodemailer` (backend) — run `npm install` in `backend/`.
+- Tests: `tests/email.test.js` (provider pick, templates, booking + delivered wiring; captured via an in-memory outbox in test mode).
+- Next: "Continue with email" passwordless login, then forgot-password, on top of this.
+
+---
+
 ## 28 Nov 2026 — Web push notifications
 
 **Branch:** `feature/web-push`

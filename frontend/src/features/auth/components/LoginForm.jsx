@@ -4,9 +4,7 @@ import { Input, PasswordInput } from '../../../components/ui/Input'
 import { Button } from '../../../components/ui/Button'
 import { useAuth } from '../hooks/useAuth'
 import { validate, required, isEmail, safeRedirect, homeFor } from '../../../utils/bookingValidation'
-// OTP login is switched off until the backend has the OTP endpoints. To turn it on, remove the
-// comments marked "OTP" in this file.
-// OTP: import { OtpLoginForm } from './OtpLoginForm'
+import { EmailCodeLoginForm } from './EmailCodeLoginForm'
 
 const schema = {
   email: [[required, 'Enter your email.'], [isEmail, 'Enter a valid email address.']],
@@ -52,25 +50,22 @@ export function EmailLoginForm() {
   )
 }
 
-/** Login screen: email and password. (Mobile number + OTP is built but switched off for now.) */
+/** Login screen: a one-time email code by default, with password as a fallback. */
 export function LoginForm() {
   const [params] = useSearchParams()
-  // OTP: const [mode, setMode] = useState('phone') // phone | email
+  const [usePassword, setUsePassword] = useState(false)
 
   return (
     <div className="space-y-4">
-      <EmailLoginForm />
+      {usePassword ? <EmailLoginForm /> : <EmailCodeLoginForm />}
 
-      {/* OTP: replace <EmailLoginForm /> above with this block.
-      {mode === 'phone' ? <OtpLoginForm /> : <EmailLoginForm />}
       <button
         type="button"
-        onClick={() => setMode((m) => (m === 'phone' ? 'email' : 'phone'))}
+        onClick={() => setUsePassword((v) => !v)}
         className="w-full text-center text-sm font-semibold text-brand-700 hover:underline"
       >
-        {mode === 'phone' ? 'Use email instead' : 'Use mobile number instead'}
+        {usePassword ? 'Email me a code instead' : 'Log in with a password instead'}
       </button>
-      */}
 
       <p className="text-center text-sm text-navy-500">
         New to Wise Laundry? <Link to={`/register${params.get('redirect') ? `?redirect=${encodeURIComponent(params.get('redirect'))}` : ''}`} className="font-semibold text-brand-700 hover:underline">Create an account</Link>
